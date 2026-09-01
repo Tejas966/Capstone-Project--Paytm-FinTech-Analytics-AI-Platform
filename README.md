@@ -1,7 +1,7 @@
 # Paytm FinTech Analytics & AI Advisory Platform
 
-**Capstone Project — BitSoM / IIM Indore**  
-**Candidate:** Tejas | **Repo:** Capstone-Project--Paytm-FinTech-Analytics-AI-Platform
+**Capstone Project — BitSoM**  
+**Candidate:** Tejas Joshi | **Repo:** Capstone-Project--Paytm-FinTech-Analytics-AI-Platform
 
 > A three-part end-to-end FinTech analytics platform spanning payments fraud detection, credit risk ML, and AI-augmented portfolio advisory — built on synthetic Paytm-style data generated from fixed random seeds for full reproducibility.
 
@@ -10,7 +10,7 @@
 ## Repository Structure
 
 ```
-├── payments_fraud_analytics/      # Part 1 — Payments & Fraud (35 marks)
+├── payments_fraud_analytics/      # Part 1 — Payments & Fraud
 │   ├── generate_data.py           # Generates all CSVs (seed=42)
 │   ├── merchants.csv / users.csv / ledger.csv / gateway_export.csv
 │   ├── sql_queries.py             # Creates paytm_payments.db + 9 SQL queries
@@ -22,7 +22,7 @@
 │   ├── charts/                    # 4 dashboard PNG images
 │   └── README.md                  # Chart interpretations + design decisions
 │
-├── credit_risk_lending_ml/        # Part 2 — Credit Risk ML (40 marks)
+├── credit_risk_lending_ml/        # Part 2 — Credit Risk ML
 │   ├── generate_data.py           # Generates CSVs (seed=42)
 │   ├── credit_applicants.csv      # 400 rows, 20.25% default rate
 │   ├── txn_behaviour.csv          # 265 rows, 15 seeded anomalies
@@ -30,7 +30,7 @@
 │   ├── charts/                    # 4 chart PNGs
 │   └── README.md                  # Bias note + recommendation + design decisions
 │
-├── ai_advisory_blockchain/        # Part 3 — AI Advisory (25 marks)
+├── ai_advisory_blockchain/        # Part 3 — AI Advisory
 │   ├── stock_universe.py          # 6 stocks with beta, std_dev, analyst_return
 │   ├── investor_profiles.py       # 5 investor profiles
 │   ├── disclosure_snippets.py     # 6 company disclosure texts
@@ -170,7 +170,8 @@ To enable the optional LLM path (Groq): `set MOCK_LLM=0` (Windows) then rerun.
 | Burner boundary | 0 ≤ age_days < 30 using julianday() | Matches brief's explicit boundary condition |
 | Match rate definition | Same amount_inr AND status in both files | Per brief exact definition |
 | Chargeback ratio | Count-based (not amount-based) | Per brief specification |
-| Excel nested IF | amount_inr ≥ 999 AND region ≠ "East" | Per-transaction proxy; daily-total rule enforced in Unique_Days sheet |
+| Excel nested IF | SUMPRODUCT daily total > 5000 AND region != "East" | Computes merchant's daily total inline via SUMPRODUCT; classifies as "High-Value Merchant Day" |
+| Excel PivotTable | Real PivotTable via xlwings COM | Genuine Excel PivotTable object, not a static pandas export |
 
 ### Part 2 — Credit Risk ML
 | Decision | Choice | Rationale |

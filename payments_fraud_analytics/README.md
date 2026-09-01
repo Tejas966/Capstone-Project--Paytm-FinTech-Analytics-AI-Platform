@@ -1,7 +1,6 @@
 # Part 1 — Payments & Fraud Analytics
 
 **Paytm vertical:** UPI / Wallet / QR merchant payments  
-**Marks:** 35
 
 ---
 
@@ -37,8 +36,8 @@ python generate_workbook.py
 | **Merchants** | Raw 40-merchant reference table |
 | **Transactions** | Full 547-row ledger + VLOOKUP + nested IF columns |
 | **HLOOKUP_Demo** | Horizontally-laid MDR fee-rate table + HLOOKUP formulas |
-| **Pivot_Summary** | Pivot-style aggregation by merchant_id × status |
-| **Unique_Days** | Count-vs-count-unique for top 10 merchants |
+| **Pivot_Summary** | Real Excel PivotTable by merchant_id x status (created via xlwings) |
+| **Unique_Days** | Qualifying merchant-day totals + classification for top 10 merchants |
 
 ### VLOOKUP (Transactions sheet, columns I–K)
 ```excel
@@ -66,19 +65,29 @@ python generate_workbook.py
 
 ### Nested IF / AND Classification Rule
 ```excel
-=IF(AND($E2>=999, $K2<>"East", "East"<>$K2), "High-Value Merchant Day", "Standard")
+=IF(AND(
+  SUMPRODUCT(($C$2:$C$548=$C2)*(LEFT($D$2:$D$548,10)=LEFT($D2,10))*$E$2:$E$548) > 5000,
+  $K2 <> "East"
+), "High-Value Merchant Day", "Standard")
 ```
 **Documented rule:** A transaction is classified `"High-Value Merchant Day"` when:
-1. `amount_inr >= INR 999` (per-transaction proxy; daily totals > INR 5,000 are checked in the Unique_Days sheet using `daily_total_gmv > 5000`)
-2. `region != "East"`
+1. The merchant's **daily transaction total** (sum of all `amount_inr` for the same `merchant_id` on the same calendar day, computed via `SUMPRODUCT`) exceeds **INR 5,000**
+2. `region != "East"` (looked up via VLOOKUP in column K)
 
-Both conditions must hold (AND logic). The `Unique_Days` sheet applies the exact daily-total rule: **daily GMV > INR 5,000 AND region ≠ "East"**.
+Both conditions must hold (AND logic). The `SUMPRODUCT` formula computes the daily total inline for each row by matching `merchant_id` (column C) and date portion of `transaction_time` (column D via `LEFT(...,10)`).
 
 ### Pivot Table (Pivot_Summary sheet)
+- **Real Excel PivotTable** created via xlwings COM automation (not a static pandas export)
 - Rows: `merchant_id` (all 40 merchants)
 - Columns: `status` (captured, failed, chargeback)
-- Values: `txn_count` and `total_amount_inr` per cell
-- The `Unique_Days` sheet adds **count-vs-count-unique comparison** for the top 10 merchants, showing `total_txn_count` alongside `unique_days` transacted and `avg_txns_per_active_day`
+- Data fields: `Total Amount (INR)` (Sum) and `Txn Count` (Count)
+- Source data: Transactions sheet columns A:H
+
+### Unique Days (Unique_Days sheet)
+- Shows top 10 merchants by transaction count
+- **qualifying_days**: count of calendar days where the merchant's daily total exceeded INR 5,000 (actual daily totals, not averages)
+- **max_daily_total**: the highest single-day total for each merchant
+- Classification applies the same IF/AND rule: qualifying days > 0 AND region != East
 
 ---
 
