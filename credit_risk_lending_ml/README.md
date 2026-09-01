@@ -1,7 +1,6 @@
 # Part 2 — Credit Risk & Lending ML
 
 **Paytm vertical:** Postpaid BNPL underwriting  
-**Marks:** 40
 
 ---
 
@@ -90,22 +89,23 @@ Default rates are **monotonically increasing** across tiers ✅ — confirming t
 
 ## Bias-Awareness Note
 
-### Proxy Risk: `is_thin_file` and Structural Disadvantage
+### Proxy Risk: Structural Disadvantage in Financial Data
 
-The `is_thin_file` flag is a direct proxy for **new-to-credit** status — a demographic that disproportionately includes young adults, rural borrowers, women entering the workforce for the first time, and recent migrants who have not yet built a formal credit history. In the current pipeline, thin-file applicants (80 out of 400, 20%) receive lower predicted creditworthiness purely because they lack a bureau record, not because they have demonstrated an inability to repay. This is a structural bias: the model penalises the absence of data as if it were evidence of risk.
+Even without explicit fields for gender, religion, or location, financial models are highly susceptible to proxy discrimination. In this dataset, three key variables pose significant proxy risks:
 
-**Specific risks for Paytm Postpaid:**
-1. **Disparate impact on underserved populations:** If `is_thin_file` correlates with socioeconomic status, geography (rural vs urban), or gender, then the model effectively denies credit access to segments that Paytm Postpaid's financial inclusion mandate explicitly seeks to serve.
-2. **Self-fulfilling exclusion:** Thin-file applicants who are denied credit never generate repayment history, perpetuating their exclusion in future model cycles.
-3. **`credit_score` as a proxy:** Even for applicants with a bureau score, the score itself encodes historical lending patterns. If lenders historically under-served certain demographics, their credit scores will be structurally lower — not because they are higher risk, but because they had fewer opportunities to demonstrate creditworthiness.
+1. **`credit_bureau_score` (and the `is_thin_file` flag):** This is a direct proxy for new-to-credit status. In India, thin-file populations disproportionately include young adults, rural borrowers, women entering the workforce, and recent migrants. The model currently penalizes the absence of a score (80 out of 400 applicants) as if it were evidence of risk. Furthermore, for those who do have a score, historical lending biases are baked in: if lenders historically underserved certain demographics, their scores will be structurally lower.
+2. **`employment_type`:** The split between "salaried", "self_employed", and "gig" work often correlates heavily with gender and socioeconomic background. For example, gig work may over-index in certain migrant or lower-income urban populations, meaning a penalty on this feature could inadvertently redline those communities.
+3. **`monthly_income_inr`:** Income is one of the strongest correlated proxies for historical privilege, caste, and gender wage gaps. Using it directly as a protective feature (as the risk score generation formula does) means the model will structurally favor demographics that already benefit from wage premiums.
+
+**Specific risks for Paytm Postpaid:** If these features correlate with protected classes, the model effectively denies credit access to segments that Paytm Postpaid's financial inclusion mandate explicitly seeks to serve, creating a self-fulfilling cycle of exclusion.
 
 ### Governance Step Before Production Deployment
 
 Before this model is deployed in a live Paytm Postpaid underwriting pipeline, the following governance checkpoint must be passed:
 
-1. **Fairness audit:** Compute approval rates, default prediction rates, and false negative rates (missed safe applicants) broken down by `is_thin_file`, `employment_type`, and geographic proxy variables. Flag any subgroup where approval rate diverges >10pp from the overall rate without a legitimate credit-risk justification.
-2. **Adverse action explainability:** Under RBI's Fair Practices Code for NBFCs and the emerging SEBI/RBI guidelines on algorithmic credit, every declined applicant must receive an intelligible reason for rejection. The model's top-3 feature contributions (via SHAP or logistic coefficients) must be surfaced in the rejection communication.
-3. **Thin-file alternative scoring:** Pilot an alternative scorecard for thin-file applicants using UPI transaction frequency, merchant category diversity, and Paytm wallet recharge patterns — behavioural signals that are independent of bureau history and more predictive for new-to-credit segments.
+1. **Maker-Checker Human-in-the-Loop Review:** Implement a mandatory maker-checker review for all declined thin-file applicants. Rather than auto-rejecting them, these applications should be routed to a human underwriter who can incorporate alternate data (e.g., utility payments, Paytm wallet history).
+2. **Fairness audit:** Compute approval rates and false negative rates broken down by `is_thin_file` and `employment_type`. Flag any subgroup where approval rate diverges >10pp from the overall rate without a legitimate credit-risk justification.
+3. **Adverse action explainability:** Under RBI's Fair Practices Code for NBFCs, every declined applicant must receive an intelligible reason for rejection. The model's top-3 feature contributions must be surfaced in the rejection communication.
 
 ---
 
