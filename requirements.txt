@@ -1,0 +1,20 @@
+# Python dependencies — Paytm FinTech Analytics & AI Advisory Platform
+# Install with: pip install -r requirements.txt
+# Python version: 3.9+
+
+# ── Core data science ─────────────────────────────────────────────────────────
+numpy>=1.24
+pandas>=2.0
+scikit-learn>=1.3
+
+# ── Visualisation ────────────────────────────────────────────────────────────
+matplotlib>=3.7
+
+# ── Excel workbook generation (Part 1) ───────────────────────────────────────
+openpyxl>=3.1
+
+# ── SQLite is part of Python's standard library — no extra install needed ────
+# sqlite3  (stdlib)
+
+# ── Optional: LLM path (Part 3 — only if MOCK_LLM=0) ────────────────────────
+# groq>=0.9          # Uncomment if using live LLM mode
