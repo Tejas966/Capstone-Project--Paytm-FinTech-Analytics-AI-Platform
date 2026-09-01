@@ -216,3 +216,8 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Excel temporary lock files (created when workbook is open)
+~$*.xlsx
+~$*.xls
+~$*.xlsm
