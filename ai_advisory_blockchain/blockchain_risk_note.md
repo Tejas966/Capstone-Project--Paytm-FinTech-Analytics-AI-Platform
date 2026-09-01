@@ -54,4 +54,3 @@ The **T.A.N.G. framework** (Temptation / Authority / Need / Greed) identifies th
 
 ---
 
-*This appendix is a written analysis only. No code implementation is required for Part 3E.*

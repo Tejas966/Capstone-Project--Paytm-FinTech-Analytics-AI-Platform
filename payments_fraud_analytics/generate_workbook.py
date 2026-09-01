@@ -79,9 +79,9 @@ ledger_df    = pd.read_csv("ledger.csv", parse_dates=["transaction_time"])
 wb = openpyxl.Workbook()
 wb.remove(wb.active)   # remove default sheet
 
-# =============================================================================
+
 # SHEET 1 — Merchants (reference table)
-# =============================================================================
+
 ws_m = wb.create_sheet("Merchants")
 
 m_headers = ["merchant_id", "merchant_name", "category", "region"]
@@ -104,9 +104,9 @@ ws_m.column_dimensions["C"].width = 18
 ws_m.column_dimensions["D"].width = 12
 ws_m.freeze_panes = "A2"
 
-# =============================================================================
+
 # SHEET 2 — Transactions  (VLOOKUP + nested IF)
-# =============================================================================
+
 ws_t = wb.create_sheet("Transactions")
 
 # Header
@@ -179,9 +179,9 @@ note_cell = ws_t.cell(row=1, column=14, value=(
 ))
 note_cell.font = Font(italic=True, color="64748B", size=8)
 
-# =============================================================================
+
 # SHEET 3 — HLOOKUP Demo (horizontally-laid MDR fee-rate table)
-# =============================================================================
+
 ws_h = wb.create_sheet("HLOOKUP_Demo")
 
 section_title(ws_h, 1, 1, "MDR Fee-Rate Reference Table (Horizontal Layout)", span=5, bg=BLUE_DARK)
@@ -252,9 +252,9 @@ ws_h.row_dimensions[10].height = 48
 for col_letter, w in [("A", 22), ("B", 14), ("C", 14), ("D", 14), ("E", 14)]:
     ws_h.column_dimensions[col_letter].width = w
 
-# =============================================================================
+
 # SHEET 4 — Pivot Summary (by merchant_id + status)
-# =============================================================================
+
 ws_p = wb.create_sheet("Pivot_Summary")
 
 section_title(ws_p, 1, 1, "Pivot Table — Total Amount & Count by Merchant × Status", span=6, bg=BLUE_DARK)
@@ -288,9 +288,9 @@ for col in range(1, len(p_headers) + 1):
     ws_p.column_dimensions[get_column_letter(col)].width = 18
 ws_p.freeze_panes = "A3"
 
-# =============================================================================
+
 # SHEET 5 — Unique Days (count-vs-count-unique for >= 5 merchants)
-# =============================================================================
+
 ws_u = wb.create_sheet("Unique_Days")
 
 section_title(ws_u, 1, 1,
@@ -368,9 +368,9 @@ for col, w in enumerate(col_widths_u, 1):
     ws_u.column_dimensions[get_column_letter(col)].width = w
 ws_u.freeze_panes = "A3"
 
-# =============================================================================
+
 # Save workbook
-# =============================================================================
+
 wb.save("merchant_workbook.xlsx")
 print("merchant_workbook.xlsx saved successfully.")
 print("Sheets: Merchants | Transactions | HLOOKUP_Demo | Pivot_Summary | Unique_Days")

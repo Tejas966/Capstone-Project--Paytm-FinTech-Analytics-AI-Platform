@@ -31,29 +31,29 @@ from sklearn.metrics import (
     ConfusionMatrixDisplay
 )
 
-# ── output directory for charts ──────────────────────────────────────────────
+# output directory for charts 
 os.makedirs("charts", exist_ok=True)
 
-# =============================================================================
+
 # PART A — EDA and Preprocessing
-# =============================================================================
+
 print("=" * 70)
 print("PART A — EDA and Preprocessing")
 print("=" * 70)
 
 df = pd.read_csv("credit_applicants.csv")
 
-# ── A1: Basic stats ───────────────────────────────────────────────────────────
+# A1: Basic stats
 print(f"\nDataset shape: {df.shape}")
 print(f"Columns: {list(df.columns)}")
 
-# ── A2: Default rate ──────────────────────────────────────────────────────────
+# A2: Default rate
 default_rate = df["default"].mean()
 print(f"\nDefault rate (exact measured): {default_rate:.4f}  ({default_rate*100:.2f}%)")
 assert 0.15 <= default_rate <= 0.25, \
     f"Default rate {default_rate:.4f} outside expected 15–25% range!"
 
-# ── A3: Thin-file flag (computed on RAW data — safe, no fitted statistic) ─────
+# A3: Thin-file flag
 missing_bureau = df["credit_bureau_score"].isna().sum()
 missing_pct = missing_bureau / len(df)
 print(f"Missing credit_bureau_score: {missing_bureau} rows ({missing_pct*100:.1f}%)")
@@ -61,7 +61,7 @@ print(f"Missing credit_bureau_score: {missing_bureau} rows ({missing_pct*100:.1f
 df["is_thin_file"] = df["credit_bureau_score"].isna().astype(int)
 print(f"is_thin_file flag created: {df['is_thin_file'].sum()} thin-file applicants")
 
-# ── A4: EDA charts ────────────────────────────────────────────────────────────
+# A4: EDA charts
 fig, axes = plt.subplots(2, 3, figsize=(15, 9))
 fig.suptitle("Credit Applicant EDA — Paytm Postpaid", fontsize=15, fontweight="bold", y=1.01)
 
@@ -136,9 +136,9 @@ plt.savefig("charts/eda_overview.png", dpi=150, bbox_inches="tight")
 plt.close()
 print("\nSaved: charts/eda_overview.png")
 
-# =============================================================================
+
 # PART A — Train/Test Split (BEFORE imputation — strict order)
-# =============================================================================
+
 print("\n--- Train/Test Split (stratified, random_state=42) ---")
 
 # Features: exclude applicant_id and target
@@ -159,9 +159,9 @@ X_train, X_test, y_train, y_test = train_test_split(
 print(f"Train size: {len(X_train)}  |  Test size: {len(X_test)}")
 print(f"Train default rate: {y_train.mean():.4f}  |  Test default rate: {y_test.mean():.4f}")
 
-# =============================================================================
+
 # PART A — Imputation (training median ONLY — never test-set derived)
-# =============================================================================
+
 print("\n--- Imputation: training-set median for credit_bureau_score ---")
 train_bureau_median = X_train["credit_bureau_score"].dropna().median()
 print(f"Training-set bureau score median: {train_bureau_median:.1f}")
@@ -169,9 +169,9 @@ print(f"Training-set bureau score median: {train_bureau_median:.1f}")
 X_train["credit_bureau_score"] = X_train["credit_bureau_score"].fillna(train_bureau_median)
 X_test["credit_bureau_score"]  = X_test["credit_bureau_score"].fillna(train_bureau_median)
 
-# =============================================================================
+
 # PART A — Encoding (one-hot for employment_type)
-# =============================================================================
+
 print("\n--- Encoding: one-hot for employment_type ---")
 X_train = pd.get_dummies(X_train, columns=["employment_type"], drop_first=False)
 X_test  = pd.get_dummies(X_test,  columns=["employment_type"], drop_first=False)
@@ -181,9 +181,9 @@ X_train, X_test = X_train.align(X_test, join="left", axis=1, fill_value=0)
 
 print(f"Feature columns after encoding: {list(X_train.columns)}")
 
-# =============================================================================
+
 # PART A — Scaling (fit on train ONLY)
-# =============================================================================
+
 print("\n--- Scaling: StandardScaler fit on training split only ---")
 scaler = StandardScaler()
 X_train_scaled = scaler.fit_transform(X_train)
@@ -191,9 +191,9 @@ X_test_scaled  = scaler.transform(X_test)
 
 print("Preprocessing pipeline complete.")
 
-# =============================================================================
+
 # PART B — Classification Models
-# =============================================================================
+
 print("\n" + "=" * 70)
 print("PART B — Classification Models")
 print("=" * 70)
@@ -334,9 +334,9 @@ plt.savefig("charts/risk_pricing_table.png", dpi=150, bbox_inches="tight")
 plt.close()
 print("Saved: charts/risk_pricing_table.png")
 
-# =============================================================================
+
 # PART C — Anomaly Detection (Isolation Forest)
-# =============================================================================
+
 print("\n" + "=" * 70)
 print("PART C — Anomaly Detection (Isolation Forest on txn_behaviour.csv)")
 print("=" * 70)
@@ -412,9 +412,9 @@ plt.savefig("charts/anomaly_detection.png", dpi=150, bbox_inches="tight")
 plt.close()
 print("Saved: charts/anomaly_detection.png")
 
-# =============================================================================
+
 # PART D — Final Comparison Table
-# =============================================================================
+
 print("\n" + "=" * 70)
 print("PART D — Final Model Comparison Table & Recommendation")
 print("=" * 70)

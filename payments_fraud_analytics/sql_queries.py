@@ -25,9 +25,9 @@ if os.path.exists(DB_PATH):
 conn = sqlite3.connect(DB_PATH)
 cur  = conn.cursor()
 
-# =============================================================================
+
 # STEP 1: Create normalized schema with PK / FK constraints
-# =============================================================================
+
 cur.executescript("""
 PRAGMA foreign_keys = ON;
 
@@ -57,9 +57,9 @@ CREATE TABLE IF NOT EXISTS transactions (
 conn.commit()
 print("Schema created: merchants (PK), users (PK), transactions (PK + FK)")
 
-# =============================================================================
+
 # STEP 2: Load CSVs into tables
-# =============================================================================
+
 merchants_df = pd.read_csv("merchants.csv")
 users_df     = pd.read_csv("users.csv")
 ledger_df    = pd.read_csv("ledger.csv")
@@ -85,11 +85,11 @@ def run_query(title, sql, note=""):
     print(f"\nRows returned: {len(df)}")
     return df
 
-# =============================================================================
+
 # QUERY 1 — SELECT / WHERE / ORDER BY / LIMIT / DISTINCT
 # Overview of high-value captured transactions
 # Clauses: SELECT, WHERE, ORDER BY, LIMIT
-# =============================================================================
+
 q1 = """
 SELECT DISTINCT
     t.transaction_id,
@@ -111,11 +111,11 @@ run_query(
     "Clauses: SELECT DISTINCT, WHERE, ORDER BY DESC, LIMIT"
 )
 
-# =============================================================================
+
 # QUERY 2 — GROUP BY / HAVING
 # Payment method summary — methods with more than 10 transactions
 # Clauses: GROUP BY, HAVING, aggregate functions
-# =============================================================================
+
 q2 = """
 SELECT
     payment_method,
@@ -134,11 +134,11 @@ run_query(
     "Clauses: GROUP BY, HAVING, COUNT, SUM, AVG"
 )
 
-# =============================================================================
+
 # QUERY 3 — INNER JOIN
 # Transactions joined with merchant details
 # Clauses: INNER JOIN, WHERE, ORDER BY
-# =============================================================================
+
 q3 = """
 SELECT
     t.transaction_id,
@@ -160,11 +160,11 @@ run_query(
     "Clauses: INNER JOIN, WHERE, ORDER BY, LIMIT"
 )
 
-# =============================================================================
+
 # QUERY 4 — LEFT JOIN
 # All merchants with their transaction stats (including merchants with 0 txns)
 # Clauses: LEFT JOIN, GROUP BY, aggregate functions
-# =============================================================================
+
 q4 = """
 SELECT
     m.merchant_id,
@@ -189,10 +189,10 @@ run_query(
     "Clauses: LEFT JOIN, GROUP BY, COALESCE, NULLIF — includes merchants with 0 transactions"
 )
 
-# =============================================================================
+
 # QUERY 5 — Quantify chargeback impact
 # Count of chargeback transactions, unique users, total amount
-# =============================================================================
+
 q5 = """
 SELECT
     COUNT(*)                          AS chargeback_txn_count,
@@ -208,13 +208,13 @@ run_query(
     "Required query: chargeback quantification"
 )
 
-# =============================================================================
+
 # QUERY 6 — Identify BURNER ACCOUNTS (Required fraud query)
 # Users whose signup_date is < 30 days before transaction_time,
 # restricted to status = 'chargeback'.
 # Boundary: 0 <= (txn_time - signup_date).days < 30
 # Must surface all 15 seeded burner-account rows (TXN200000 to TXN200014)
-# =============================================================================
+
 q6 = """
 SELECT
     t.transaction_id,
@@ -243,13 +243,13 @@ burner_df = run_query(
 seeded_burners = burner_df[burner_df["transaction_id"].str.startswith("TXN2")]
 print(f"\nSeeded burner-account rows (TXN2*) found: {len(seeded_burners)} / 15")
 
-# =============================================================================
+
 # QUERY 7 — Detect VELOCITY ATTACKS (Required fraud query)
 # Users with 3+ transactions within any 10-minute window.
 # Method: floor transaction_time to the nearest 10-minute bucket,
 # then group by (user_id, bucket) and filter count >= 3.
 # Must surface all 8 seeded velocity clusters.
-# =============================================================================
+
 q7 = """
 SELECT
     t.user_id,
@@ -276,10 +276,10 @@ seeded_velocity = velocity_df[velocity_df["transaction_ids"].str.contains("TXN3"
 print(f"\nRows containing seeded velocity-attack transactions (TXN3*): {len(seeded_velocity)}")
 print("(Each seeded cluster has 4 txns in a 5-minute window, so all should appear in 10-min buckets)")
 
-# =============================================================================
+
 # QUERY 8 — Category-level GMV breakdown (INNER JOIN + GROUP BY)
 # Bonus query showing GMV by merchant category
-# =============================================================================
+
 q8 = """
 SELECT
     m.category,
@@ -302,9 +302,9 @@ run_query(
     "Bonus query: category breakdown for dashboard context"
 )
 
-# =============================================================================
+
 # QUERY 9 — Daily transaction summary (time-series prep for dashboard)
-# =============================================================================
+
 q9 = """
 SELECT
     DATE(transaction_time)           AS txn_date,

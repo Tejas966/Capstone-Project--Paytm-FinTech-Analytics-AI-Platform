@@ -18,7 +18,7 @@ METHOD_WEIGHTS = [0.55, 0.20, 0.15, 0.10]
 AMOUNTS_INR = [49, 99, 149, 299, 499, 799, 1499, 2999, 4999]
 AMOUNT_WEIGHTS = [0.18, 0.16, 0.14, 0.14, 0.12, 0.10, 0.08, 0.05, 0.03]
 
-# --- 40 merchants ---
+#  40 merchants 
 merchants = pd.DataFrame({
     "merchant_id": range(1, 41),
     "merchant_name": [f"Merchant_{i:03d}" for i in range(1, 41)],
@@ -26,14 +26,14 @@ merchants = pd.DataFrame({
     "region": [random.choice(REGIONS) for _ in range(40)],
 })
 
-# --- 350 established users, signed up 30-730 days before the window start ---
+#  350 established users, signed up 30-730 days before the window start 
 window_start = datetime(2026, 1, 1)
 users = pd.DataFrame({
     "user_id": range(1, 351),
     "signup_date": [window_start - timedelta(days=random.randint(30, 730)) for _ in range(350)],
 })
 
-# --- 500 baseline transactions over a 30-day window ---
+#  500 baseline transactions over a 30-day window 
 rows = []
 for i in range(500):
     txn_time = window_start + timedelta(
@@ -50,7 +50,7 @@ for i in range(500):
         "risk_score": random.randint(0, 100),
     })
 
-# --- inject 15 "burner account" chargeback frauds: brand-new users (< 30 days old) ---
+#  inject 15 "burner account" chargeback frauds: brand-new users (< 30 days old) 
 next_user_id = 351
 for i in range(15):
     txn_time = window_start + timedelta(days=random.randint(10, 29), hours=random.randint(0, 23))
@@ -69,7 +69,7 @@ for i in range(15):
     })
     next_user_id += 1
 
-# --- inject 8 velocity-attack clusters: 4 rapid-fire txns each within a 5-minute window ---
+#  inject 8 velocity-attack clusters: 4 rapid-fire txns each within a 5-minute window 
 for cluster in range(8):
     victim_user = random.randint(1, 350)
     base_time = window_start + timedelta(days=random.randint(0, 29), hours=random.randint(0, 23))
@@ -94,7 +94,7 @@ print(f"merchants.csv: {len(merchants)} rows")
 print(f"users.csv:     {len(users)} rows")
 print(f"ledger.csv:    {len(ledger)} rows")
 
-# --- build the deliberately-discrepant "gateway export" copy for reconciliation ---
+#  build the deliberately-discrepant "gateway export" copy for reconciliation 
 gateway = ledger.copy()
 n = len(gateway)
 missing_idx = np.random.choice(n, size=int(0.05 * n), replace=False)

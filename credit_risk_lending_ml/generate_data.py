@@ -51,7 +51,7 @@ df.to_csv("credit_applicants.csv", index=False)
 print("Default rate distribution:")
 print(df["default"].value_counts(normalize=True))
 
-# --- second dataset: transaction-behaviour rows for anomaly detection ---
+# second dataset: transaction-behaviour rows for anomaly detection
 M = 250
 behaviour = pd.DataFrame({
     "txn_id": [f"BTXN{5000+i}" for i in range(M)],

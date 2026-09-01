@@ -25,10 +25,10 @@ import math
 from stock_universe   import STOCK_UNIVERSE, RISK_FREE_RATE, MARKET_RETURN
 from investor_profiles import INVESTOR_PROFILES
 
-# ── MOCK_LLM flag ─────────────────────────────────────────────────────────────
+#  MOCK_LLM flag 
 MOCK_LLM = os.environ.get("MOCK_LLM", "1") != "0"   # default: mock mode
 
-# ── Prescribed allocation lookup table (EXACT — do not change) ────────────────
+#  Prescribed allocation lookup table (EXACT — do not change) 
 ALLOCATION_TABLE = {
     "Conservative": ["PAYBOND", "PAYGOLD",   "PAYRETAIL"],
     "Moderate":     ["PAYRETAIL", "PAYINFRA", "PAYGOLD"],
@@ -38,9 +38,9 @@ ALLOCATION_TABLE = {
 ESCALATION_THRESHOLD = 0.20   # 20% portfolio std dev → escalate
 PAIRWISE_CORRELATION = 0.30   # rho = 0.3 for every pair
 
-# =============================================================================
+
 # Tool function (simulates an external API call)
-# =============================================================================
+
 def get_stock_data(ticker: str) -> dict:
     """
     ACT stage tool: look up stock data from STOCK_UNIVERSE.
@@ -54,9 +54,9 @@ def get_stock_data(ticker: str) -> dict:
     return STOCK_UNIVERSE[ticker]
 
 
-# =============================================================================
+
 # CAPM and portfolio maths
-# =============================================================================
+
 def capm_expected_return(beta: float) -> float:
     """E(R) = R_f + beta * (E(R_m) - R_f). Uses ONLY beta — never analyst_expected_return."""
     return RISK_FREE_RATE + beta * (MARKET_RETURN - RISK_FREE_RATE)
@@ -80,14 +80,14 @@ def portfolio_variance(weights: list, std_devs: list, rho: float) -> float:
     return var
 
 
-# =============================================================================
+
 # Narrative sentence (gated by MOCK_LLM)
-# =============================================================================
+
 def generate_narrative(investor_id, risk_tolerance, tickers,
                        portfolio_return, portfolio_std,
                        escalated, investment_amount_inr):
     if MOCK_LLM:
-        # ── Mock path (graded baseline): f-string template ────────────────────
+        #  Mock path (graded baseline): f-string template
         if escalated:
             return (
                 f"For {risk_tolerance} investor {investor_id}, the proposed allocation "
@@ -105,7 +105,7 @@ def generate_narrative(investor_id, risk_tolerance, tickers,
                 f"INR {investment_amount_inr:,} is auto-approved for deployment."
             )
     else:
-        # ── Optional MOCK_LLM=0 path (not graded) ─────────────────────────────
+        #  Optional MOCK_LLM=0 path (not graded) 
         try:
             from groq import Groq
             client = Groq()
@@ -129,9 +129,9 @@ def generate_narrative(investor_id, risk_tolerance, tickers,
                                       escalated, investment_amount_inr)
 
 
-# =============================================================================
+
 # Main agent loop
-# =============================================================================
+
 def run_advisory_agent(investor: dict) -> dict:
     investor_id          = investor["investor_id"]
     risk_tolerance       = investor["risk_tolerance"]
@@ -143,14 +143,14 @@ def run_advisory_agent(investor: dict) -> dict:
           f"|  Horizon: {horizon_years}yr  |  Amount: INR {investment_amount:,}")
     print(f"{'='*65}")
 
-    # ── THINK: determine allocation from prescribed lookup table ──────────────
+    #  THINK: determine allocation from prescribed lookup table 
     print("\n[THINK] Determining allocation from prescribed lookup table...")
     tickers = ALLOCATION_TABLE[risk_tolerance]
     weight  = 1 / 3          # equal-weight: 1/3 each
     weights = [weight] * 3
     print(f"  Allocation: {tickers}  |  Weights: [{weight:.4f}, {weight:.4f}, {weight:.4f}]")
 
-    # ── ACT: call get_stock_data() tool for each ticker ───────────────────────
+    #  ACT: call get_stock_data() tool for each ticker 
     print("\n[ACT] Calling get_stock_data() tool for each ticker...")
     stock_data = {}
     for ticker in tickers:
@@ -159,7 +159,7 @@ def run_advisory_agent(investor: dict) -> dict:
         print(f"  get_stock_data('{ticker}') -> beta={data['beta']:.2f}, "
               f"std_dev={data['std_dev']:.2%}")
 
-    # ── OBSERVE -> DECIDE ──────────────────────────────────────────────────────
+    #  OBSERVE -> DECIDE 
     print("\n[OBSERVE] Computing CAPM expected return and portfolio variance...")
 
     # Per-stock CAPM returns (using ONLY beta, never analyst_expected_return)
@@ -182,7 +182,7 @@ def run_advisory_agent(investor: dict) -> dict:
     print(f"  Portfolio Variance (rho={PAIRWISE_CORRELATION}): {var:.6f}")
     print(f"  Portfolio Std Dev:  {portfolio_std:.4%}")
 
-    # ── Human-in-the-loop escalation decision ─────────────────────────────────
+    #  Human-in-the-loop escalation decision 
     escalated = portfolio_std > ESCALATION_THRESHOLD
     print(f"\n[DECISION] Portfolio std dev {portfolio_std:.2%} "
           f"{'>' if escalated else '<='} {ESCALATION_THRESHOLD:.0%} threshold")
@@ -194,7 +194,7 @@ def run_advisory_agent(investor: dict) -> dict:
         decision = "AUTO_APPROVED"
         print(f"  --> {decision}")
 
-    # ── Narrative (MOCK_LLM gated) ────────────────────────────────────────────
+    #  Narrative (MOCK_LLM gated) 
     mode_label = "MOCK" if MOCK_LLM else "LLM"
     print(f"\n[NARRATIVE — {mode_label} mode]")
     narrative = generate_narrative(
@@ -218,9 +218,9 @@ def run_advisory_agent(investor: dict) -> dict:
     }
 
 
-# =============================================================================
+
 # Run all 5 investor profiles
-# =============================================================================
+
 if __name__ == "__main__":
     mode = "MOCK (deterministic, no API key)" if MOCK_LLM else "LLM (MOCK_LLM=0)"
     print(f"Portfolio Advisory Agent — Paytm Money")
@@ -233,7 +233,7 @@ if __name__ == "__main__":
         result = run_advisory_agent(investor)
         results.append(result)
 
-    # ── Summary table ─────────────────────────────────────────────────────────
+    #  Summary table 
     print(f"\n\n{'='*65}")
     print("SUMMARY — All 5 Investor Profiles")
     print(f"{'='*65}")
@@ -245,7 +245,7 @@ if __name__ == "__main__":
         print(f"{r['investor_id']:<6} {r['risk_tolerance']:<13} {tickers_str:<34} "
               f"{r['portfolio_return']:>6.2%}  {r['portfolio_std']:>6.2%}  {r['decision']}")
 
-    # ── Escalation verification ───────────────────────────────────────────────
+    #  Escalation verification 
     print(f"\n{'='*65}")
     print("ESCALATION VERIFICATION")
     print(f"{'='*65}")

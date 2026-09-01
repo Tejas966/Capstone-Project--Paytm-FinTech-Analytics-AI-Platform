@@ -1,7 +1,7 @@
 # Part 3 — AI-Augmented FinTech Advisory & Blockchain Risk
 
 **Paytm vertical:** Money / Wealth advisory + blockchain risk appendix  
-**Marks:** 25  
+
 **MOCK_LLM mode used for all recorded run transcripts:** `MOCK_LLM=1` (default — no API key required)
 
 ---

@@ -75,9 +75,9 @@ def reconcile_payments(ledger_df: pd.DataFrame, gateway_df: pd.DataFrame):
     return missing_in_gateway, extra_in_gateway, amount_mismatches, status_mismatches
 
 
-# =============================================================================
+
 # Run reconciliation against the actual committed CSVs
-# =============================================================================
+
 if __name__ == "__main__":
     print("=" * 65)
     print("Paytm Payment Reconciliation — ledger.csv vs gateway_export.csv")

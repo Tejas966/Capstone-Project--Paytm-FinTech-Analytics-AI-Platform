@@ -28,9 +28,9 @@ from reconcile import reconcile_payments   # reuse the function from Part C
 
 os.makedirs("charts", exist_ok=True)
 
-# =============================================================================
+
 # Load data
-# =============================================================================
+
 ledger_df    = pd.read_csv("ledger.csv",         parse_dates=["transaction_time"])
 gateway_df   = pd.read_csv("gateway_export.csv", parse_dates=["transaction_time"])
 merchants_df = pd.read_csv("merchants.csv")
@@ -42,13 +42,13 @@ ledger_full["txn_date"] = ledger_full["transaction_time"].dt.date
 # Run reconciliation (needed for match_rate scorecard)
 missing, extra, amt_mis, stat_mis = reconcile_payments(ledger_df, gateway_df)
 
-# =============================================================================
+
 # LAYER 1 — Headline Scorecards
 # Exact definitions from the brief:
 #   match_rate         = rows present in BOTH with identical amount_inr AND status
 #                        / total ledger rows
 #   chargeback_ratio   = count(status=='chargeback') / count(all) — count-based
-# =============================================================================
+
 
 total_ledger   = len(ledger_df)
 total_gmv      = ledger_df["amount_inr"].sum()
@@ -74,7 +74,7 @@ print(f"Success rate      : {success_rate:.2%}")
 print(f"Match rate        : {match_rate:.2%}")
 print(f"Chargeback ratio  : {chargeback_ratio:.2%}")
 
-# ── Chart 1: Scorecards ───────────────────────────────────────────────────────
+# Chart 1: Scorecards
 fig, axes = plt.subplots(1, 4, figsize=(18, 4.5))
 fig.patch.set_facecolor("#0f1117")
 
@@ -121,9 +121,9 @@ healthy <1% threshold and warrants immediate fraud-team escalation.
 """.format(total_gmv / 1e6, match_rate, chargeback_ratio)
 print(interpretation_1)
 
-# =============================================================================
+
 # LAYER 2 — Trends: Daily GMV + Chargeback Count
-# =============================================================================
+
 daily = ledger_full.groupby("txn_date").agg(
     daily_gmv=("amount_inr", "sum"),
     daily_chargebacks=("status", lambda x: (x == "chargeback").sum()),
@@ -175,9 +175,9 @@ dataset. Operations teams should configure alerts for any single day exceeding
 """
 print(interpretation_2)
 
-# =============================================================================
+
 # LAYER 3 — Breakdown: GMV by Payment Method and by Category
-# =============================================================================
+
 gmv_method   = ledger_full.groupby("payment_method")["amount_inr"].sum().sort_values(ascending=False)
 gmv_category = ledger_full.groupby("category")["amount_inr"].sum().sort_values(ascending=False)
 
@@ -239,11 +239,11 @@ daily-needs verticals.
 """
 print(interpretation_3)
 
-# =============================================================================
+
 # LAYER 4 — Details: Top 10 Merchants Table (saved as IMAGE, not DataFrame)
 # Per-merchant chargeback_ratio = count(chargeback) / count(all txns) for that merchant
 # Flag merchants where chargeback_ratio > 1%
-# =============================================================================
+
 merchant_stats = ledger_full.groupby(["merchant_id", "merchant_name",
                                        "category", "region"]).agg(
     total_txns      =("transaction_id", "count"),
