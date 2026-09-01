@@ -12,6 +12,7 @@ matplotlib>=3.7
 
 # ── Excel workbook generation (Part 1) ───────────────────────────────────────
 openpyxl>=3.1
+xlwings>=0.30       # Required for genuine PivotTable creation via COM automation
 
 # ── SQLite is part of Python's standard library — no extra install needed ────
 # sqlite3  (stdlib)
