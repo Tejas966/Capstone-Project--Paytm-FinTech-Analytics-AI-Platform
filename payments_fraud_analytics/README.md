@@ -167,7 +167,7 @@ All counts are consistent with the injection rates in `generate_data.py`.
 
 ### Layer 2 — Daily Trends (`charts/layer2_trends.png`)
 
-**Interpretation:** Daily GMV ranges from ~INR 4K to ~INR 28K with no strong weekly seasonality, consistent with the uniform random distribution used in data generation. Chargeback spikes on Jan 23 (4 chargebacks) and Jan 29 (3 chargebacks) align with late-month velocity-attack cluster activity. Ops teams should configure real-time alerts when any single day exceeds 3 chargebacks or when GMV drops >50% below the 30-day rolling average.
+**Interpretation:** Daily GMV ranges from ~INR 4K to ~INR 28K with no strong weekly seasonality, consistent with the uniform random distribution used in data generation. Chargeback spikes on Jan 23 (4 chargebacks) and Jan 29 (3 chargebacks) align with late-month burner-account activity injected into the dataset (velocity attacks are distinct and do not result in chargebacks). Ops teams should configure real-time alerts when any single day exceeds 3 chargebacks or when GMV drops >50% below the 30-day rolling average.
 
 ### Layer 3 — GMV Breakdown (`charts/layer3_breakdown.png`)
 
@@ -187,7 +187,7 @@ All counts are consistent with the injection rates in `generate_data.py`.
 | Decision | Choice | Rationale |
 |---|---|---|
 | MDR fee rates | UPI 0.25%, Wallet 0.50%, Card 1.80%, Netbanking 0.90% | Illustrative industry approximations; documented in workbook |
-| Nested IF cutoff | `amount_inr >= 999` per txn; `daily_total_gmv > 5000` in Unique_Days | Proxy that identifies high-value transactions without needing a live pivot lookup |
+| Excel nested IF | SUMPRODUCT daily total > 5000 AND region != "East" | Computes merchant's daily total inline via SUMPRODUCT; classifies as "High-Value Merchant Day" |
 | Velocity bucket | Floor to 10-min bucket via `SUBSTR(txn_time,1,15)||'0:00'` | Deterministic SQLite-compatible approach; surfaces all 8 seeded clusters |
 | Burner boundary | `0 <= age_days < 30` using `julianday()` | Matches the brief's explicit boundary spec |
 | Match rate | Requires identical `amount_inr` AND `status` in both files | Per the brief's exact definition |

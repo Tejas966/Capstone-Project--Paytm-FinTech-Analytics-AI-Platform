@@ -169,8 +169,9 @@ Layer 2 — Trends Interpretation:
 Daily GMV fluctuates between ~INR 4K and ~INR 28K with no strong weekly
 seasonality, consistent with uniformly distributed synthetic data. The chargeback
 spikes on Jan 23 (4 chargebacks) and Jan 29 (3 chargebacks) coincide with
-velocity-attack clusters and late-month burner-account activity injected into the
-dataset. Operations teams should configure alerts for any single day exceeding
+late-month burner-account activity injected into the dataset (velocity
+attacks are distinct and do not result in chargebacks). Operations teams
+should configure alerts for any single day exceeding
 3 chargebacks or daily GMV dropping more than 50% below the 30-day moving average.
 """
 print(interpretation_2)
