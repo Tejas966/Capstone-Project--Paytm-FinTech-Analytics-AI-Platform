@@ -20,7 +20,7 @@ DeFi protocols governed by DAOs introduce a risk layer that most retail investor
 
 Standard CAPM portfolio theory weights assets by their contribution to the portfolio's Sharpe ratio. Crypto fails this test on several dimensions simultaneously.
 
-First, there is no intrinsic value or cash flow. Equities represent ownership in a business that generates earnings. Bonds pay contractual coupons. Bitcoin and most altcoins generate nothing — their value is entirely a function of what the next buyer will pay, making fundamental valuation impossible. Return distributions are fat-tailed and subject to severe survivorship bias. Extreme losses are far more common than a normal distribution predicts. Thousands of tokens have gone to zero, but only the winners appear in the historical return data that researchers cite, inflating the perceived average return of the asset class.
+First, there is no intrinsic value or cash flow. Equities represent ownership in a business that generates earnings. Bonds pay contractual coupons. Bitcoin and most altcoins generate nothing — their value is entirely a function of what the next buyer will pay, making fundamental valuation impossible. Return distributions are fat-tailed, positively skewed by rare extreme winners, and subject to severe survivorship bias; thousands of tokens have gone to zero, but only the winners appear in historical data, inflating the perceived average return of the asset class.
 
 The correlation benefit is unreliable. While crypto has historically shown low correlation with Indian equities, this correlation tends to spike toward one during broad risk-off episodes — exactly when diversification matters most. Add in bid-ask spreads, custody fees and rupee on/off-ramp costs, and the net benefit shrinks to negligible.
 
@@ -30,16 +30,16 @@ Paytm Money, operating under SEBI's Investment Adviser framework, should default
 
 ## 3. The T.A.N.G. Fraud Framework and Paytm's Exposure
 
-The T.A.N.G. framework (Temptation, Authority, Need, Greed) maps the psychological levers that social engineers use to trigger unauthorised transactions. Two vectors are especially dangerous on Paytm's platform.
+The T.A.N.G. framework (Temptation, Authority, Need, Greed) maps the psychological levers that social engineers use to trigger unauthorised transactions. Two vectors are especially dangerous on Paytm's combined UPI/wallet, lending, and wealth platform.
 
 **Vector 1: Greed — Fake Paytm Money Investment Schemes**
 
-Fraudsters impersonate Paytm Money representatives through WhatsApp and cloned social media pages, offering guaranteed high-return schemes promising 20 to 40% monthly returns. Victims are told to send a UPI payment to activate the scheme. Once the transfer goes through, it is irreversible. The Greed lever works because Paytm's genuine wealth advisory brand creates plausibility for users who have already invested through Paytm Money.
+Fraudsters impersonate Paytm Money representatives through WhatsApp and cloned social media pages, offering guaranteed returns of 20 to 40% per month. Victims are directed to send a UPI payment to activate the scheme; once completed, the transfer is irreversible. The Greed lever works because Paytm's genuine wealth advisory brand lends plausibility to the scheme.
 
 The named bank-side defence is AI-powered transaction velocity and beneficiary anomaly scoring. The gateway should flag any UPI transfer where the beneficiary was registered less than thirty days ago, the amount exceeds the user's ninety-day average by more than three times, and the transfer occurs within minutes of a Paytm Money app session. When all three conditions are met, a mandatory ten-minute cooling-off period with an in-app fraud warning should be triggered.
 
 **Vector 2: Authority — Fake RBI or SEBI Compliance Freeze**
 
-Fraudsters call Paytm Postpaid customers posing as RBI or SEBI officers, claiming the account has been frozen and that an immediate UPI payment is required to restore it. The Authority lever exploits fear of government action and ignorance of how real regulatory communications work — regulators never demand instant UPI payment. This vector targets Postpaid users specifically because their existing credit relationship with Paytm gives them a stronger motivation to comply quickly.
+Fraudsters call Paytm Postpaid customers posing as RBI or SEBI officers, claiming the account has been frozen and that an immediate UPI payment is required to restore access. The Authority lever exploits fear of government action — regulators never demand instant UPI payment. This vector targets Postpaid users because their existing credit relationship with Paytm creates urgency to comply quickly.
 
-The named bank-side defence is inbound call-spoofing detection combined with real-time validation against TRAI's Sanchar Saathi API. Paytm should flag calls from numbers mimicking official government prefixes and simultaneously push a notification to the app stating that Paytm and RBI will never request payment via UPI to resolve regulatory matters.
+The named bank-side defence is real-time beneficiary-risk scoring at the payment gateway: any outbound UPI or wallet transfer that occurs within thirty minutes of an inbound call, targets a recently registered or high-risk VPA, and carries a narrative matching known account-freeze scam patterns triggers an automatic payment confirmation challenge and a mandatory cooling-off period with an in-app alert stating that regulators never demand instant UPI payment to resolve compliance matters.
