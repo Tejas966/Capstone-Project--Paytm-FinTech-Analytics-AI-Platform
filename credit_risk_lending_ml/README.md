@@ -37,7 +37,7 @@ If imputation or scaling were fit on the full dataset before splitting, the test
 ### Dataset stats
 - `credit_applicants.csv`: 400 rows, 20.25% default rate, 80 thin-file applicants (20%)
 - `txn_behaviour.csv`: 265 rows, 15 seeded anomalies (BTXNA0–BTXNA14)
-- `is_thin_file`: flag = 1 when `credit_score` is null (no bureau history)
+- `is_thin_file`: flag = 1 when `credit_bureau_score` is null (no bureau history)
 
 ---
 
@@ -47,21 +47,21 @@ If imputation or scaling were fit on the full dataset before splitting, the test
 
 | Model | Accuracy | Precision | Recall | ROC-AUC |
 |---|---|---|---|---|
-| Logistic Regression | 69% | 55% | 70% | **0.716** |
-| Decision Tree | 65% | 48% | 60% | 0.634 |
+| Logistic Regression | 69% | 35.9% | 70% | **0.716** |
+| Decision Tree | 65% | 30.8% | 60% | 0.634 |
 
 **Winner: Logistic Regression** — higher AUC (0.716 vs 0.634) and recall (70% vs 60%). For credit risk, recall matters most: missing a true defaulter (false negative) is more costly than a false alarm.
 
 ### Risk-Based Pricing Table
 
-| Risk Tier | Predicted Default Prob Range | Actual Default Rate | Assigned Rate |
+| Risk Tier | Quartile (Predicted Prob) | Actual Default Rate | Assigned Rate |
 |---|---|---|---|
-| Tier 1 — Prime | 0%–25% | 8% | 12% |
-| Tier 2 — Near Prime | 25%–50% | 8% | 16% |
-| Tier 3 — Subprime | 50%–75% | 28% | 24% |
-| Tier 4 — Deep Subprime | 75%–100% | 36% | 28% |
+| Low Risk | 0%–25% (Bottom quartile) | 8% | 12%–14% |
+| Medium Risk | 25%–50% | 8% | 16%–18% |
+| High Risk | 50%–75% | 28% | 20%–22% |
+| Very High Risk | 75%–100% (Top quartile) | 36% | 24%–28% |
 
-Default rates are **monotonically increasing** across tiers ✅ — confirming the model's risk-ranking validity.
+Default rates are **monotonically non-decreasing** across tiers ✅ — confirming the model's risk-ranking validity.
 
 ### Charts saved in `charts/`
 
@@ -81,7 +81,7 @@ Default rates are **monotonically increasing** across tiers ✅ — confirming t
 **Results:**
 - Seeded anomalies (BTXNA*): 15 total
 - Detected: **11/15 (73.3% recall)**
-- False positive rate: ~2.7% of legitimate transactions flagged
+- False positive rate: 1.6% (4 false positives among 250 legitimate transactions)
 
 **Interpretation:** The IsolationForest catches 73% of the hand-crafted anomalies — transactions with new device + 1–4am timing + amount > 3× user average. The 4 missed anomalies had boundary-level feature values that blended with legitimate high-value night transactions. In production, this would be layered with rule-based velocity checks (from Part 1) for defence-in-depth.
 
@@ -113,7 +113,7 @@ Before this model is deployed in a live Paytm Postpaid underwriting pipeline, th
 
 **Recommended model: Logistic Regression (ROC-AUC = 0.716, Recall = 70%)**
 
-The Logistic Regression model outperforms the Decision Tree on both AUC (0.716 vs 0.634) and recall (70% vs 60%), making it the preferred underwriting model for Paytm Postpaid BNPL decisions. Its recall advantage is particularly important: in a credit context, a false negative (predicting "safe" for an applicant who defaults) generates a bad debt write-off, while a false positive (predicting "risky" for a safe applicant) results only in a missed revenue opportunity. The monotonically increasing default rates across the four pricing tiers (8% → 8% → 28% → 36%) confirm that the model's probability outputs are well-calibrated as a risk-ranking instrument. However, before live deployment, the bias audit described above — especially for thin-file applicants — must be completed to ensure the model does not inadvertently exclude the financially underserved populations that Paytm Postpaid is designed to reach.
+The Logistic Regression model outperforms the Decision Tree on both AUC (0.716 vs 0.634) and recall (70% vs 60%), making it the preferred underwriting model for Paytm Postpaid BNPL decisions. Its recall advantage is particularly important: in a credit context, a false negative (predicting "safe" for an applicant who defaults) generates a bad debt write-off, while a false positive (predicting "risky" for a safe applicant) results only in a missed revenue opportunity. The monotonically non-decreasing default rates across the four pricing tiers (8% → 8% → 28% → 36%) confirm that the model supports ordinal risk ranking. However, before live deployment, the bias audit described above — especially for thin-file applicants — must be completed to ensure the model does not inadvertently exclude the financially underserved populations that Paytm Postpaid is designed to reach.
 
 ---
 
