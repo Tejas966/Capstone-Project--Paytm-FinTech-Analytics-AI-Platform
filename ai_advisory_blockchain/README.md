@@ -86,7 +86,7 @@ Escalation verification: INV01, INV02, INV04 — NOT escalated ✅ | INV03, INV0
 
 **Bull agent:** References E(R)=16.3% vs market return 13%, beta=1.55x market amplification.
 
-**Bear agent:** References std_dev=34% (implies -68% in a 2-sigma year), beta=1.55 downside amplification, Sharpe-like ratio of 0.27.
+**Bear agent:** References std_dev=34% (highlighting high historical volatility), beta=1.55 downside amplification, Sharpe-like ratio of 0.27.
 
 **Synthesizer:** Combines both — recommends PAYTECH only as a 10-20% satellite allocation for Aggressive investors with 7-10yr horizon, paired with lower-beta anchors to keep portfolio std < 20%.
 
@@ -139,7 +139,7 @@ All 9 cells: WACC > gT confirmed. Min gap = 6.32% ≥ 1pp ✅
 | EV/EBITDA (15× EBITDA of INR 58Cr) | 870 |
 | Delta | −37.4% |
 
-**Written comparison:** The DCF value of INR 544.6 Cr sits 37.4% below the EV/EBITDA anchor of INR 870 Cr. The gap is explained by the DCF's conservative WACC of 11.32% discounting 5 years of 12% growth — the market multiple implicitly assumes higher terminal value expectations embedded in a 15× EBITDA. In practice, the two methods bracket a reasonable valuation range (INR 545–870 Cr); a financial advisor would use the midpoint (~INR 700 Cr) as a working enterprise value, subject to scenario analysis on the growth rate assumption.
+**Written comparison:** The DCF value of INR 544.6 Cr sits 37.4% below the EV/EBITDA anchor of INR 870 Cr. The gap is explained by the DCF's conservative WACC of 11.32% discounting 5 years of 12% growth — the market multiple implicitly assumes higher terminal value expectations embedded in a 15× EBITDA. The methods provide an illustrative range of ₹545-870 Cr; further sensitivity analysis is required.
 
 ---
 

@@ -72,8 +72,8 @@ def bear_agent(ticker: str, data: dict) -> str:
         sharpe_approx = (er - RISK_FREE_RATE) / std
         return (
             f"[BEAR] {ticker} carries substantial downside risk that investors must not ignore. "
-            f"A standard deviation of {std:.0%} means in a bad year, the portfolio could lose "
-            f"over {std * 2:.0%} of its value — far beyond what most retail investors can stomach. "
+            f"A standard deviation of {std:.0%} highlights high historical volatility, presenting "
+            f"a drawdown risk far beyond what most retail investors can stomach. "
             f"With a beta of {beta:.2f}, {ticker} will fall {beta:.2f}x harder than the market "
             f"in any broad downturn. The Sharpe-like ratio of only {sharpe_approx:.2f} "
             f"(excess return per unit of risk) is unattractive compared to safer alternatives."
